@@ -40,7 +40,5 @@ public class ProductoModel {
 
     @Column (nullable = false)
     private String imagen_producto;
-
-
     
 }
