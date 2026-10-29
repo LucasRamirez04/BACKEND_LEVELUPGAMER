@@ -1,5 +1,4 @@
 package duoc.levelupgamer.models;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,5 +37,4 @@ public class UsuarioModel {
  
     @Column(nullable = false)
     private String direccion;
- 
 }
