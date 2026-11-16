@@ -1,13 +1,11 @@
 package duoc.levelupgamer.service;
 
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import duoc.levelupgamer.dto.ProductoRequest;
 import duoc.levelupgamer.exception.ProductoNoEncontradoException;
 import duoc.levelupgamer.models.CategoriaModel;
@@ -20,7 +18,7 @@ public class ProductoService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductoService.class);
 
-    @Autowired
+    @Autowired 
     private ProductoRepository productoRepository;
 
     // Se usa el service de categoria para validar que la categoria exista
