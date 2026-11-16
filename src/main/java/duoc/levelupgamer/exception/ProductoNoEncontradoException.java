@@ -1,5 +1,8 @@
 package duoc.levelupgamer.exception;
 
-public class ProductoNoEncontradoException {
-    
+public class ProductoNoEncontradoException extends RuntimeException {
+
+    public ProductoNoEncontradoException(String mensaje) {
+        super(mensaje);
+    }
 }
