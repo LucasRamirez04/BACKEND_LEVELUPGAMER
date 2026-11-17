@@ -6,10 +6,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import duoc.levelupgamer.dto.ProductoRequest;
-import duoc.levelupgamer.exception.ProductoNoEncontradoException;
-import duoc.levelupgamer.models.CategoriaModel;
-import duoc.levelupgamer.models.ProductoModel;
+import duoc.levelupgamer.models.entities.CategoriaModel;
+import duoc.levelupgamer.models.entities.ProductoModel;
 import duoc.levelupgamer.repository.ProductoRepository;
 
 @Service
