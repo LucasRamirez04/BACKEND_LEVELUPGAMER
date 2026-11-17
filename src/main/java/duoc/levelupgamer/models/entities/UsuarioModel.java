@@ -1,4 +1,4 @@
-package duoc.levelupgamer.models;
+package duoc.levelupgamer.models.entities;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
