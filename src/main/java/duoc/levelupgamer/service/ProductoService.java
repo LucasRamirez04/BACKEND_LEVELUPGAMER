@@ -1,13 +1,16 @@
 package duoc.levelupgamer.service;
 
 import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import duoc.levelupgamer.models.entities.CategoriaModel;
 import duoc.levelupgamer.models.entities.ProductoModel;
+import duoc.levelupgamer.repository.CategoriaRepository;
 import duoc.levelupgamer.repository.ProductoRepository;
 
 @Service
@@ -16,58 +19,80 @@ public class ProductoService {
 
     private static final Logger log = LoggerFactory.getLogger(ProductoService.class);
 
-    @Autowired 
+    @Autowired
     private ProductoRepository productoRepository;
 
-    // Se usa el service de categoria para validar que la categoria exista
     @Autowired
-    private CategoriaService categoriaService;
+    private CategoriaRepository categoriaRepository;
 
     public List<ProductoModel> listarTodos() {
         log.info("Listando todos los productos");
         return productoRepository.findAll();
     }
 
+    // Devuelve null si el producto no existe
     public ProductoModel buscarPorId(Integer id) {
         log.info("Buscando producto con id: {}", id);
-        return productoRepository.findById(id)
-                .orElseThrow(() -> new ProductoNoEncontradoException("No se encontro el producto con id: " + id));
+        return productoRepository.findById(id).orElse(null);
     }
 
+    // Devuelve null si la categoria no existe
     public List<ProductoModel> buscarPorCategoria(Integer idCategoria) {
         log.info("Buscando productos de la categoria: {}", idCategoria);
-        CategoriaModel categoria = categoriaService.buscarPorId(idCategoria);
+        CategoriaModel categoria = categoriaRepository.findById(idCategoria).orElse(null);
+        if (categoria == null) {
+            return null;
+        }
         return productoRepository.findByCategoria(categoria);
     }
 
-    public ProductoModel crearDesdeRequest(ProductoRequest request) {
-        log.info("Creando producto con nombre: {}", request.getNombre_producto());
-        ProductoModel producto = new ProductoModel();
-        copiarDatos(producto, request);
+    // Devuelve null si no se envio la categoria o la categoria no existe
+    public ProductoModel guardar(ProductoModel producto) {
+        log.info("Guardando producto: {}", producto.getNombre_producto());
+        CategoriaModel categoria = buscarCategoria(producto);
+        if (categoria == null) {
+            return null;
+        }
+        producto.setCategoria(categoria);
         return productoRepository.save(producto);
     }
 
-    public ProductoModel actualizar(Integer id, ProductoRequest request) {
+    // Devuelve null si el producto o la categoria no existen
+    public ProductoModel actualizar(Integer id, ProductoModel producto) {
         log.info("Actualizando producto con id: {}", id);
-        ProductoModel producto = buscarPorId(id);
-        copiarDatos(producto, request);
-        return productoRepository.save(producto);
+        ProductoModel existente = productoRepository.findById(id).orElse(null);
+        if (existente == null) {
+            return null;
+        }
+        CategoriaModel categoria = buscarCategoria(producto);
+        if (categoria == null) {
+            return null;
+        }
+        existente.setCategoria(categoria);
+        existente.setNombre_producto(producto.getNombre_producto());
+        existente.setDescripcion_producto(producto.getDescripcion_producto());
+        existente.setPrecio_producto(producto.getPrecio_producto());
+        existente.setPorcentaje_producto(producto.getPorcentaje_producto());
+        existente.setStock_producto(producto.getStock_producto());
+        existente.setImagen_producto(producto.getImagen_producto());
+        return productoRepository.save(existente);
     }
 
-    public void eliminar(Integer id) {
+    // Devuelve false si el producto no existe
+    public boolean eliminar(Integer id) {
         log.info("Eliminando producto con id: {}", id);
-        ProductoModel producto = buscarPorId(id);
-        productoRepository.delete(producto);
+        if (!productoRepository.existsById(id)) {
+            return false;
+        }
+        productoRepository.deleteById(id);
+        return true;
     }
 
-    // Pasa los datos del request al modelo (lo usan crear y actualizar)
-    private void copiarDatos(ProductoModel producto, ProductoRequest request) {
-        producto.setCategoria(categoriaService.buscarPorId(request.getId_categoria()));
-        producto.setNombre_producto(request.getNombre_producto());
-        producto.setDescripcion_producto(request.getDescripcion_producto());
-        producto.setPrecio_producto(request.getPrecio_producto());
-        producto.setPorcentaje_producto(request.getPorcentaje_producto());
-        producto.setStock_producto(request.getStock_producto());
-        producto.setImagen_producto(request.getImagen_producto());
+    // Busca en la BD la categoria que viene en el body (null si no viene o no existe)
+    private CategoriaModel buscarCategoria(ProductoModel producto) {
+        if (producto.getCategoria() == null) {
+            return null;
+        }
+        return categoriaRepository.findById(producto.getCategoria().getId_categoria()).orElse(null);
     }
 }
