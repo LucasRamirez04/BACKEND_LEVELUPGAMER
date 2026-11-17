@@ -37,4 +37,7 @@ public class UsuarioModel {
  
     @Column(nullable = false)
     private String direccion;
+
+    @Column(nullable = false)
+    private String rol;
 }
