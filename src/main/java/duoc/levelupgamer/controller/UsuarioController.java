@@ -18,7 +18,7 @@ import duoc.levelupgamer.models.entities.UsuarioModel;
 import duoc.levelupgamer.service.UsuarioService;
 
 @RestController
-@RequestMapping("/api/usuarios")
+@RequestMapping("/api/v1/usuarios")
 public class UsuarioController {
 
     @Autowired
