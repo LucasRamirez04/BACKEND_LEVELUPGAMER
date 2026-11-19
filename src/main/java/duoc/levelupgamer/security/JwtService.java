@@ -24,18 +24,20 @@ public class JwtService {
         this.expiracionMinutos = expiracionMinutos;
     }
 
-    public String generarToken(String username){
+    // Actualizado para recibir correo y rol
+    public String generarToken(String username, String rol){
         Date ahora = new Date();
         Date expiracion = new Date(ahora.getTime() + getExpiracionSegundos() * 1000);
         return Jwts.builder()
                 .subject(username)
+                .claim("rol", rol)
                 .issuedAt(ahora)
                 .expiration(expiracion)
                 .signWith(key)
                 .compact();
     }
 
-    // devuelve el username si el token es valido y no ha expirado, si no null
+    // Devuelve el username (correo) si el token es válido y no ha expirado, si no null
     public String validarToken(String token){
         try {
             return Jwts.parser()
@@ -44,6 +46,20 @@ public class JwtService {
                     .parseSignedClaims(token)
                     .getPayload()
                     .getSubject();
+        } catch (JwtException | IllegalArgumentException e) {
+            return null;
+        }
+    }
+
+    // Nuevo método para que JwtFilter pueda leer el rol desde el token
+    public String extraerRol(String token){
+        try {
+            return Jwts.parser()
+                    .verifyWith(key)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload()
+                    .get("rol", String.class);
         } catch (JwtException | IllegalArgumentException e) {
             return null;
         }
